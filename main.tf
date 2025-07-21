@@ -2,33 +2,13 @@ provider "azurerm" {
   features {}
 }
 
-variable "resource_group_name" {
-  default = "ghActions-rg"
-}
-
-variable "location" {
-  default = "East US"
-}
-
-variable "app_name" {
-  default = "simple_app"
-}
-
-variable "docker_image" {
-  description = "Docker image"
-}
-
-variable "container_port" {
-  default = "3000"
-}
-
 resource "azurerm_resource_group" "rg" {
-  name     = var.resource_group_name
-  location = var.location
+  name     = "ghActions-rg"
+  location = "East US"
 }
 
 resource "azurerm_app_service_plan" "plan" {
-  name                = "${var.app_name}-plan"
+  name                = "myapp-demo-plan"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   kind                = "Linux"
@@ -41,18 +21,18 @@ resource "azurerm_app_service_plan" "plan" {
 }
 
 resource "azurerm_app_service" "app" {
-  name                = var.app_name
+  name                = "myapp-demo"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   app_service_plan_id = azurerm_app_service_plan.plan.id
 
   site_config {
-    linux_fx_version = "DOCKER|${var.docker_image}"
+    linux_fx_version = "DOCKER|wuonam/gh-test:latest"
     always_on        = true
   }
 
   app_settings = {
-    WEBSITES_PORT = var.container_port
+    WEBSITES_PORT = "3000"
   }
 
   https_only = true
