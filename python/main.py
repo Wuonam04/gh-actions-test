@@ -14,7 +14,7 @@ redis_client = redis.StrictRedis(
 
 @app.route("/")
 def home():
-    return "Hello from Flask!"
+    return "Hello from Flask"
 
 
 @app.route("/greet", methods=["GET"])
