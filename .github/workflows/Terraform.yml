@@ -25,10 +25,10 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Set Azure Subscription
-        run: |
-          az account set --subscription "${{ secrets.AZ_SUBSCRIPTION_ID }}"
 
+      - name: Show files in root
+        run: ls -la
+        
       - name: Terraform Init
         run: terraform init
 
