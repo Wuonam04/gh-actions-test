@@ -1,40 +1,38 @@
-resource "azurerm_resource_group" "my_k8s_rg" {
-  name     = "my-k8s-rg"
-  location = "West Europe"
+provider "azurerm" {
+  features {}
 }
 
-resource "azurerm_kubernetes_cluster" "my_k8s_cluster" {
-  location            = azurerm_resource_group.my_k8s_rg.location
-  name                = "my-k8s-cluster"
-  resource_group_name = azurerm_resource_group.my_k8s_rg.name
-  dns_prefix          = "my-k8s-cluster"
+resource "azurerm_resource_group" "rg" {
+  name     = "ghActions-rg"
+  location = "East US"
+}
 
-  identity {
-    type = "SystemAssigned"
+resource "azurerm_service_plan" "plan" {
+  name                = "myapp-demo-plan"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  os_type             = "Linux"
+  sku_name            = "B1"
+}
+
+resource "azurerm_app_service" "app" {
+  name                = "myapp-demo"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  app_service_plan_id = azurerm_service_plan.plan.id
+
+  site_config {
+    linux_fx_version = "DOCKER|wuonam/gh-test:latest"
+    always_on        = true
   }
 
-  default_node_pool {
-    name       = "agentpool"
-    vm_size    = "Standard_A2_v2"
-    node_count = 2
+  app_settings = {
+    WEBSITES_PORT = "3000"
   }
 
-  network_profile {
-    network_plugin    = "kubenet"
-    load_balancer_sku = "standard"
-  }
+  https_only = true
 }
 
-
-output "rg_name" {
-  value = azurerm_resource_group.my_k8s_rg.name
-}
-
-output "cluster_name" {
-  value = azurerm_kubernetes_cluster.my_k8s_cluster.name
-}
-
-output "kube_config" {
-  value     = azurerm_kubernetes_cluster.my_k8s_cluster.kube_config_raw
-  sensitive = true
+output "app_url" {
+  value = "https://${azurerm_app_service.app.default_site_hostname}"
 }
