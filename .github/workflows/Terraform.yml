@@ -26,9 +26,8 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
 
-      - name: Show files in root
-        run: ls -la
-        
+      
+
       - name: Terraform Init
         run: terraform init
 
