@@ -3,7 +3,8 @@ name: Terraform Deployment
 on:
   push:
     branches:
-      - Edward-Terraform 
+      - Edward-Terraform
+      - Deployment
 
 jobs:
   terraform:
